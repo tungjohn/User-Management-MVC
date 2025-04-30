@@ -1,0 +1,130 @@
+<?php
+if (!empty($_SERVER['argv'][1])) {
+    /**
+     * make:Controller
+     */
+    if ($_SERVER['argv'][1] == 'make:controller') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get controller name
+            $controllerName = $_SERVER['argv'][2];
+
+            // check controller exist
+            if (file_exists('app/controllers/' . $controllerName . '.php')) {
+                echo colorLog('Controller ' . $controllerName . ' already exists' . PHP_EOL, 'e');
+            } else {
+                // create controller file
+
+                $data = file_get_contents('core/console/controller.tpl');
+                $data = str_replace('{controllerName}', $controllerName, $data);
+                file_put_contents('app/controllers/' . $controllerName . '.php', $data);
+
+                echo colorLog('Controller ' . $controllerName . ' created successfully' . PHP_EOL, 's');
+            }
+        }
+    }
+
+    if ($_SERVER['argv'][1] == 'delete:controller') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get controller name
+            $controllerName = $_SERVER['argv'][2];
+
+            // check controller exist
+            if (file_exists('app/controllers/' . $controllerName . '.php')) {
+                // delete controller file
+                unlink('app/controllers/' . $controllerName . '.php');
+                echo colorLog('Controller ' . $controllerName . ' deleted successfully' . PHP_EOL, 's');
+            } else {
+                echo colorLog('Controller ' . $controllerName . ' not exists' . PHP_EOL, 'e');
+            }
+        }
+    }
+
+    /**
+     * make:Model
+     */
+    if ($_SERVER['argv'][1] == 'make:model') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get model name
+            $modelName = $_SERVER['argv'][2];
+
+            // check model exist
+            if (file_exists('app/models/' . $modelName . '.php')) {
+                echo colorLog('Model ' . $modelName . ' already exists' . PHP_EOL, 'e');
+            } else {
+                // create model file
+
+                $data = file_get_contents('core/console/model.tpl');
+                $data = str_replace('{modelName}', $modelName, $data);
+                file_put_contents('app/models/' . $modelName . '.php', $data);
+
+                echo colorLog('Model ' . $modelName . ' created successfully' . PHP_EOL, 's');
+            }
+        }
+    }
+
+    if ($_SERVER['argv'][1] == 'delete:model') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get model name
+            $modelName = $_SERVER['argv'][2];
+
+            // check model exist
+            if (file_exists('app/models/' . $modelName . '.php')) {
+                // delete model file
+                unlink('app/models/' . $modelName . '.php');
+                echo colorLog('Model ' . $modelName . ' deleted successfully' . PHP_EOL, 's');
+            } else {
+                echo colorLog('Model ' . $modelName . ' not exists' . PHP_EOL, 'e');
+            }
+        }
+    }
+
+    /**
+     * make:middleware
+     */
+    if ($_SERVER['argv'][1] == 'make:middleware') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get model name
+            $middlewareName = $_SERVER['argv'][2];
+
+            // check model exist
+            if (file_exists('app/middlewares/' . $middlewareName . '.php')) {
+                echo colorLog('Middleware ' . $middlewareName . ' already exists' . PHP_EOL, 'e');
+            } else {
+                // create model file
+
+                $data = file_get_contents('core/console/middleware.tpl');
+                $data = str_replace('{middlewareName}', $middlewareName, $data);
+                file_put_contents('app/middlewares/' . $middlewareName . '.php', $data);
+
+                echo colorLog('Middleware ' . $middlewareName . ' created successfully' . PHP_EOL, 's');
+            }
+        }
+    }
+
+    if ($_SERVER['argv'][1] == 'delete:middleware') {
+        if (!empty($_SERVER['argv'][2])) {
+            // get model name
+            $modelName = $_SERVER['argv'][2];
+
+            // check model exist
+            if (file_exists('app/middlewares/' . $modelName . '.php')) {
+                // delete model file
+                unlink('app/middlewares/' . $modelName . '.php');
+                echo colorLog('Middleware ' . $modelName . ' deleted successfully' . PHP_EOL, 's');
+            } else {
+                echo colorLog('Middleware ' . $modelName . ' not exists' . PHP_EOL, 'e');
+            }
+        }
+    }
+}
+
+function colorLog(string $str, string $type = '') {
+    $colors = [
+        'e' => 31, //error
+        's' => 32, //success
+        'w' => 33, //warning
+        'i' => 36  //info
+    ];
+    $color = $colors[$type] ?? 0;
+    return "\033[".$color."m".$str."\033[0m\n";
+}

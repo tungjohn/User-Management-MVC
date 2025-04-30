@@ -1,0 +1,11 @@
+1. Set rules
+- fieldname
+- rules
+
+2. Thông báo
+- fieldname
+- errores
+
+3. Run validate()
+- true
+- false
