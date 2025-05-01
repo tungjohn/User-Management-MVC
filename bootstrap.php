@@ -17,6 +17,10 @@ define('_WEB_ROOT', $web_root);
 $public_root = $web_root . '/public';
 define('_PUBLIC_ROOT', $public_root);
 
+// _ASSET_DIR
+$asset_dir = $public_root . '/assets';
+define('_ASSET_DIR', $asset_dir);
+
 // tự động load config
 $configs_dir = scandir('configs');
 if (!empty($configs_dir)) {

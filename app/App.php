@@ -16,7 +16,7 @@ class App {
 
         $this->__routes = new Route();
 
-        $this->__controller = 'Home';
+        $this->__controller = 'HomeController';
         if (!empty($routes['default_controller'])) {
             $this->__controller = $routes['default_controller'];
         }

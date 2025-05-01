@@ -6,21 +6,21 @@
  * Model Kế thừa class Database
  * Database connect qua class Connection và gọi đến các phương thức truy vấn CSDL
  */
-class Home extends Controller {
+class HomeController extends Controller {
 
-    public $users;
+    // public $users;
     public $data = [];
 
     public function __construct() {
-        $this->users = $this->model(self::class . 'Model');
+        // $this->users = $this->model(self::class . 'Model');
     }
 
     public function index() {
 
         // Render ra view
-        $this->data['params']['page_title'] = 'Home page';
+        $this->data['params']['page_title'] = 'Trang chủ';
         $this->data['content'] = 'home/index';
-        $this->data['page_title'] = 'Home page';
+        $this->data['page_title'] = 'Trang chủ';
         $this->render('layouts/client_layouts', $this->data);
         
     }
