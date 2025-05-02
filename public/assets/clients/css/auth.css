@@ -1,0 +1,12 @@
+body {
+    /* background-image: linear-gradient(140deg, #EADEDB 0%, #708cbc 50%, #9a41d6 75%, #EADEDB 100%); */
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    background-image: url("../images/login-background.png");
+    background-size: cover;
+}
+
+#password {
+    padding-right: 2.5rem;
+}

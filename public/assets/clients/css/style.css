@@ -7,3 +7,9 @@
     max-width: 100px;
     height: auto;
 }
+
+.logo-login {
+    max-width: 150px;
+    height: auto;
+    margin: 0 auto;
+}
