@@ -43,6 +43,9 @@ if (!empty($config['app']['service'])) {
     }
 }
 
+// Load Hash Class
+require_once 'core/Hash.php'; // Load Hash Class
+
 // Load ServiceProvider Class
 require_once 'core/ServiceProvider.php'; // Load ServiceProvider Class
 
