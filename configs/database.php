@@ -3,7 +3,7 @@ $config['database'] = [
     'host' => 'localhost',
     'user' => 'root',
     'password' => '',
-    'db' => 'php_advanced',
+    'db' => 'mvc_user_manager',
 ];
 
 $config['session'] = [

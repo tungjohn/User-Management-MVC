@@ -32,21 +32,28 @@ class Template {
         preg_match_all('/{{\s*(.+?)\s*}}/', $this->__content, $matches);
         if (!empty($matches[1])) {
             foreach ($matches[1] as $key => $value) {
-                $this->__content = str_replace($matches[0][$key], '<?php echo htmlentities(' . $value . ') ?>', $this->__content);
+                $this->__content = str_replace($matches[0][$key], '<?php echo htmlentities(' . $value . '); ?>', $this->__content);
             }
         }
     }
 
     public function printRaw() {
-        preg_match_all('/{{\s*(.+?)\s*}}/', $this->__content, $matches);
+        preg_match_all('/{!\s*(.+?)\s*!}/', $this->__content, $matches);
         if (!empty($matches[1])) {
             foreach ($matches[1] as $key => $value) {
-                $this->__content = str_replace($matches[0][$key], '<?php echo ' . $value . ' ?>', $this->__content);
+                $this->__content = str_replace($matches[0][$key], '<?php echo ' . $value . '; ?>', $this->__content);
             }
         }
     }
 
     public function ifCondition() {
+        preg_match_all('/@elseif\s*(\((.+?)\)+)\s*/', $this->__content, $matches);
+        if (!empty($matches[1])) {
+            foreach ($matches[1] as $key => $value) {
+                $this->__content = str_replace($matches[0][$key], '<?php elseif ' . $value . ':  ?>', $this->__content);
+            }
+        }
+
         preg_match_all('/@if\s*(\((.+?)\)+)\s*/', $this->__content, $matches);
         if (!empty($matches[1])) {
             foreach ($matches[1] as $key => $value) {
