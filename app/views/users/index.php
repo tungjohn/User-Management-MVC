@@ -9,25 +9,26 @@
     <form action="" method="get" class="mb-3">
         <div class="row">
             <div class="col-4">
-                <input type="text" name="keyword" id="" class="form-control" placeholder="Tìm kiếm...">
+                <input type="text" name="keyword" id="" class="form-control" placeholder="Từ khóa..." value="{{!empty($dataFields['keyword']) ? $dataFields['keyword'] : ''}}">
             </div>
             <div class="col-3">
                 <select name="group" id="" class="form-select">
                     <option value="0">Tất cả nhóm</option>
-                    <option value="1">Admin</option>
-                    <option value="2">Mod</option>
-                    <option value="3">Member</option>
+                    @foreach($groups as $group)
+                        <option value="{{$group['id']}}" {{!empty($dataFields['group']) && $dataFields['group'] == $group['id'] ? 'selected' : ''}}>{{$group['name']}}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-3">
                 <select name="status" id="" class="form-select">
                     <option value="0">Tất cả trạng thái</option>
-                    <option value="1">Kích hoạt</option>
-                    <option value="2">Khóa</option>
+                    @foreach($status as $key => $value)
+                        <option value="{{$key}}" {{!empty($dataFields['status']) && $dataFields['status'] == $key ? 'selected' : ''}}>{{$value}}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-2 d-grid">
-                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                <button type="submit" class="btn btn-primary">Tìm kiếm <i class="fa fa-search" aria-hidden="true"></i></button>
             </div>
         </div>
         

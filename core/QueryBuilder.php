@@ -1,5 +1,7 @@
 <?php
-
+/** 
+ * QueryBuilder Trait
+*/
 trait QueryBuilder
 {
     public $tableName = '';
@@ -9,7 +11,7 @@ trait QueryBuilder
     public $limit = '';
     public $orderBy = '';
     public $innerJoin = '';
-
+    public $openingParenthesis = false;
 
     public function table($tableName)
     {
@@ -17,24 +19,66 @@ trait QueryBuilder
         return $this;
     }
 
-    public function where($field, $compare, $value)
+    public function where($field, $compare = null, $value = null)
     {
+        // Logical Grouping
+        // Nếu $field là một Closure, tức là một hàm ẩn danh
+        if ($field instanceof Closure) {
+            // Bắt đầu một nhóm điều kiện với toán tử AND
+            $this->where .= ' AND (';
+            // Đánh dấu mở ngoặc đơn để không thêm operator vào đầu
+            $this->openingParenthesis = true;
+            // Gọi hàm closure để thực hiện các điều kiện bên trong
+            $field($this);
+            // Đóng ngoặc đơn sau khi thực hiện các điều kiện
+            $this->where .= ')';
+            // Trả về đối tượng hiện tại để tiếp tục chuỗi phương thức
+            return $this;
+        }
+
         if (empty($this->where)) {
             $this->operator = 'WHERE ';
         } else {
             $this->operator = ' AND ';
+            if ($this->openingParenthesis) {
+                // Nếu đã mở ngoặc đơn thì không thêm operator vào đầu
+                $this->operator = '';
+                // Đặt lại biến mở ngoặc đơn để không ảnh hưởng đến các điều kiện tiếp theo
+                $this->openingParenthesis = false;
+            } 
         }
         $this->where .= "$this->operator {$field} {$compare} '$value'";
 
         return $this;
     }
 
-    public function orWhere($field, $compare, $value)
+    public function orWhere($field, $compare = null, $value = null)
     {
+        // Logical Grouping
+        // Nếu $field là một Closure, tức là một hàm ẩn danh
+        if ($field instanceof Closure) {
+            // Bắt đầu một nhóm điều kiện với toán tử OR
+            $this->where .= ' OR (';
+            // Đánh dấu mở ngoặc đơn để không thêm operator vào đầu
+            $this->openingParenthesis = true;
+            // Gọi hàm closure để thực hiện các điều kiện bên trong
+            $field($this);
+            // Đóng ngoặc đơn sau khi thực hiện các điều kiện
+            $this->where .= ')';
+            // Trả về đối tượng hiện tại để tiếp tục chuỗi phương thức
+            return $this;
+        }
+
         if (empty($this->where)) {
             $this->operator = 'WHERE ';
         } else {
             $this->operator = ' OR ';
+            if ($this->openingParenthesis) {
+                // Nếu đã mở ngoặc đơn thì không thêm operator vào đầu
+                $this->operator = '';
+                // Đặt lại biến mở ngoặc đơn để không ảnh hưởng đến các điều kiện tiếp theo
+                $this->openingParenthesis = false;
+            } 
         }
         $this->where .= "$this->operator {$field} {$compare} '$value'";
 
