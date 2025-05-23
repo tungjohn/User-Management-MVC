@@ -35,14 +35,6 @@ class Connection
             $mess = $exception->getMessage();
             App::$app->loadError('database', ['message' => $mess]);
             die();
-            // if (preg_match('/Access denied for user/', $mess)) {
-            //     die('Lỗi kết nối CSDL' . "\n");
-            // }
-
-            // if (preg_match('/Unknow database/', $mess)) {
-            //     die('Không tìm thấy CSDL' . "\n");
-            // }
-
         }
     }
 
@@ -50,7 +42,7 @@ class Connection
     {
         if (self::$instance == null) {
             $conn = new Connection($config);
-//            self::$instance = new Connection($config);
+            // self::$instance = new Connection($config);
         }
 
         return self::$instance;

@@ -38,7 +38,8 @@ class UserModel extends Model {
             }
         }
         
-        $data = $this->db->get();
+        // phân trang
+        $data = $data->paginate(2);
         return $data;
     }
 

@@ -141,7 +141,7 @@ trait QueryBuilder
 
     public function get()
     {
-        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->orderBy $this->limit";
+        $sqlQuery = $this->toSql() . " $this->limit";
         $query = $this->query($sqlQuery,[],true);
 
         // reset query
@@ -155,7 +155,7 @@ trait QueryBuilder
 
     public function first()
     {
-        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->where LIMIT 1";
+        $sqlQuery = $this->toSql() . " LIMIT 1";
         $query = $this->query($sqlQuery,[],true);
 
         // reset query
@@ -208,6 +208,45 @@ trait QueryBuilder
         return false;
     }
 
+    /**
+     * Phân trang
+     * @param int $perPage Số bản ghi trên mỗi trang
+     * 
+     */
+    public function paginate($perPage = 10)
+    {
+        $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, [
+            'options' => ['default' => 1, 'min_range' => 1]
+        ]);
+
+        $offset = ($page - 1) * $perPage;
+        $baseUrl = $this->getBaseUrl($page);
+    
+        $sqlQuery = $this->toSql() . " LIMIT $perPage OFFSET $offset";
+        $data = $this->query($sqlQuery,[],true)->fetchAll(PDO::FETCH_ASSOC);
+
+        // Đếm tổng số dòng
+        $countSql = "SELECT COUNT(*) as total FROM ({$this->toSql()}) as sub";
+        $total = $this->query($countSql,[],true)->fetchColumn();
+
+        return new Paginator($data, $baseUrl, $total, $perPage, $page);
+    }
+
+    public function toSql()
+    {
+        $sqlQuery = "SELECT $this->selectField FROM $this->tableName $this->innerJoin $this->where $this->orderBy";
+        return $sqlQuery;
+    }
+
+    public function getBaseUrl($page)
+    {
+        $baseUrl = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_URL);
+        $baseUrl = str_replace('&page=' . $page, '', $baseUrl);
+        $baseUrl = str_replace('?page=' . $page, '', $baseUrl);
+
+        return $baseUrl;
+    }
+    
     public function resetQuery()
     {
         // reset query
