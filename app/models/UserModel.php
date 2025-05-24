@@ -39,7 +39,7 @@ class UserModel extends Model {
         }
         
         // phân trang
-        $data = $data->paginate(2);
+        $data = $data->paginate(5);
         return $data;
     }
 

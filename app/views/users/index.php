@@ -6,7 +6,7 @@
     </div>
 </div>
 
-    <form action="" method="get" class="mb-3">
+    <form action="/users/" method="get" class="mb-3">
         <div class="row">
             <div class="col-4">
                 <input type="text" name="keyword" id="" class="form-control" placeholder="Từ khóa..." value="{{!empty($dataFields['keyword']) ? $dataFields['keyword'] : ''}}">

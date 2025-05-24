@@ -46,11 +46,5 @@ class Controller {
             $template = new Template();
             $template->run($contentView, $data);
         }
-
-        
-
-        
-
-        
     }
 }

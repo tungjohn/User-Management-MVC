@@ -21,28 +21,8 @@ class Paginator implements IteratorAggregate
         return new ArrayIterator($this->data);
     }
 
-    public function total(): int {
-        return $this->totalRecord;
-    }
-
-    public function currentPage(): int {
-        return $this->currentPage;
-    }
-
     public function lastPage(): int {
         return (int) ceil($this->totalRecord / $this->perPage);
-    }
-
-    public function paginatorHeader() {
-        $header =   '<nav aria-label="Pagination">
-                        <ul class="pagination pagination-sm justify-content-end">';
-        return $header;
-    }
-
-    public function paginatorFooter() {
-        $footer = '</ul>
-                    </nav>';
-        return $footer;
     }
 
     /**
@@ -55,45 +35,38 @@ class Paginator implements IteratorAggregate
         $baseUrl = $this->baseUrl;
         $pageName = $this->pageName;
 
-        // links
-        $links = '';
-        // previous page
-        $previousPage = $nextPage = '';
-        for ($i = 1; $i <= $lastPage; $i++) {
-            if ($i == $currentPage) {
-                // previous page
-                $previousPage = '<li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
-                        </li>';
-                if ($i > 1) {
-                    $previousPage = '<li class="page-item">
-                                        <a class="page-link" href="' . $baseUrl . '&' . $pageName . '=' . ($i - 1) . '" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>';
-                }
-                
-                // current page
-                $links .= '<li class="page-item active"><a class="page-link" href="#"><span class="active">' . $i . '</span></a></li>';
-
-                // next page
-                $nextPage = '<li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;</a>
-                            </li>';
-                if ($i < $lastPage) {
-                        $nextPage = '<li class="page-item">
-                                        <a class="page-link" href="' . $baseUrl . '&' . $pageName . '=' . ($i + 1) . '" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>';
-                }
-            } else {
-                $links .= '<li class="page-item"><a class="page-link" href="' . $baseUrl . '&' . $pageName . '=' . $i . '">' . $i .'</a></li>';
-            }
+        // nếu không có dữ liệu thì không hiển thị phân trang
+        if ($lastPage <= 1) {
+            return '';
         }
 
-        $links = $this->paginatorHeader() . $previousPage . $links . $nextPage . $this->paginatorFooter();
+        // dấu phân cách của tham số page
+        $separator = strpos($baseUrl, '?') === false ? '?' : '&';
+
+        // kiểm tra nếu biến page lớn hơn tổng số trang
+        if ($currentPage > $lastPage) {
+            $currentPage = $lastPage;
+        }
+
+        // links
+        $links = $this->getPaginationTemplate(compact('lastPage', 'currentPage', 'baseUrl', 'pageName', 'separator'));
 
         return $links;
+    }
+
+    private function getPaginationTemplate($data = []) {
+        if (!empty($data)) {
+            extract($data);
+        }
+
+        $contentView = null;
+        
+        // layouts sử dụng template
+        if (file_exists('core/views/paginate.php')) {
+            $contentView = file_get_contents('core/views/paginate.php');
+        } 
+
+        $template = new Template();
+        return $template->run($contentView, $data);
     }
 }

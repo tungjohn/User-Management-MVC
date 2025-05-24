@@ -57,7 +57,6 @@ require_once 'core/Load.php'; // Load Load
 // Middlewares
 require_once 'core/Middlewares.php'; // Load Middlewares
 
-
 //require_once 'configs/routes.php'; // Load routes config
 require_once 'core/Route.php'; // Load Route
 require_once 'core/Session.php'; // Load Session
