@@ -221,15 +221,23 @@ trait QueryBuilder
 
         $offset = ($page - 1) * $perPage;
         $baseUrl = $this->getBaseUrl($page);
-    
-        $sqlQuery = $this->toSql() . " LIMIT $perPage OFFSET $offset";
-        $data = $this->query($sqlQuery,[],true)->fetchAll(PDO::FETCH_ASSOC);
 
         // Đếm tổng số dòng
         $countSql = "SELECT COUNT(*) as total FROM ({$this->toSql()}) as sub";
         $total = $this->query($countSql,[],true)->fetchColumn();
 
-        return new Paginator($data, $baseUrl, $total, $perPage, $page);
+        // Tính tổng số trang
+        $totalPage = (int) ceil($total / $perPage);
+
+        if ($totalPage > 0 && $page > $totalPage) {
+            // Nếu trang hiện tại lớn hơn tổng số trang, chuyển về trang đầu tiên
+            redirect($baseUrl);
+        }
+    
+        $sqlQuery = $this->toSql() . " LIMIT $perPage OFFSET $offset";
+        $data = $this->query($sqlQuery,[],true)->fetchAll(PDO::FETCH_ASSOC);
+
+        return new Paginator($data, $baseUrl, $totalPage, $perPage, $page);
     }
 
     public function toSql()

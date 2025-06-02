@@ -18,6 +18,7 @@ class UserModel extends Model {
 
     public function getListUser($condition = [])
     {
+        global $config;
         $data = $this->db->select('users.*, `groups`.name as group_name')
             ->table($this->tableFill())
             ->join('`groups`', 'users.group_id = `groups`.id')
@@ -39,12 +40,12 @@ class UserModel extends Model {
         }
         
         // phân trang
-        $data = $data->paginate(5);
+        $perPage = $config['app']['page_limit'] ?? 10;
+        $data = $data->paginate($perPage);
         return $data;
     }
 
-    public function getGroups()
-    {
+    public function getGroups() {
         $groups = $this->db->select('id, name')
             ->table('`groups`')
             ->orderBy('id', 'DESC')
@@ -52,8 +53,7 @@ class UserModel extends Model {
         return $groups;
     }
 
-    public function getStatus()
-    {
+    public function getStatus() {
         $status = [
             1 => 'Kích hoạt',
             2 => 'Chưa kích hoạt',

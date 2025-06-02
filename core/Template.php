@@ -47,14 +47,14 @@ class Template {
     }
 
     public function ifCondition() {
-        preg_match_all('/@elseif\s*(\((.+?)\)+)\s*/', $this->__content, $matches);
+        preg_match_all('/@elseif\s*(\((.+?)\)+)\s*\n/', $this->__content, $matches);
         if (!empty($matches[1])) {
             foreach ($matches[1] as $key => $value) {
                 $this->__content = str_replace($matches[0][$key], '<?php elseif ' . $value . ':  ?>', $this->__content);
             }
         }
 
-        preg_match_all('/@if\s*(\((.+?)\)+)\s*/', $this->__content, $matches);
+        preg_match_all('/@if\s*(\((.+?)\)+)\s*\n/', $this->__content, $matches);
         if (!empty($matches[1])) {
             foreach ($matches[1] as $key => $value) {
                 $this->__content = str_replace($matches[0][$key], '<?php if ' . $value . ' : ?>', $this->__content);

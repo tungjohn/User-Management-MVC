@@ -3,15 +3,15 @@
 class Paginator implements IteratorAggregate
 {
     protected array $data = [];
-    protected int $totalRecord = 0;
+    protected int $totalPage = 0;
     protected int $perPage;
     protected int $currentPage = 1;
     protected string $baseUrl = '';
     protected string $pageName = 'page';
 
-    public function __construct(array $data, string $baseUrl, int $totalRecord, int $perPage, int $currentPage) {
+    public function __construct(array $data, string $baseUrl, int $totalPage, int $perPage, int $currentPage) {
         $this->data = $data;
-        $this->totalRecord = $totalRecord;
+        $this->totalPage = $totalPage;
         $this->perPage = $perPage;
         $this->currentPage = $currentPage;
         $this->baseUrl = $baseUrl;
@@ -21,16 +21,19 @@ class Paginator implements IteratorAggregate
         return new ArrayIterator($this->data);
     }
 
-    public function lastPage(): int {
-        return (int) ceil($this->totalRecord / $this->perPage);
-    }
-
     /**
-     * Generate the pagination links
+     * Generate the pagination links (string)
      * @return string
+     * @example
+     * << 1 [2] 3 ... 5 6 7 >>
+     * << 1 2 [3] 4 5 6 7 >>
+     * << 1 2 3 ... 5 [6] 7 >>
+     * << 1 2 3 4 [5] 6 ... 9 10 11 >>
+     * << 1 2 3 ... 5 [6] 7 ... 9 10 11 >>
+     * << 1 2 3 ... 6 [7] 8 9 10 11 >>
      */
     public function links() {
-        $lastPage = $this->lastPage();
+        $lastPage = $this->totalPage;
         $currentPage = $this->currentPage;
         $baseUrl = $this->baseUrl;
         $pageName = $this->pageName;
@@ -39,6 +42,15 @@ class Paginator implements IteratorAggregate
         if ($lastPage <= 1) {
             return '';
         }
+
+        // phân chia các page thành 3 phần để tránh unlimited pagination
+        $beginPartPagination = 3; // số trang phần đầu
+        $endPartPagination = 3; // số trang phần cuối
+        $beforeCurrentPage = 1; // số trang trước trang hiện tại
+        $afterCurrentPage = 1; // số trang sau trang hiện tại
+        $middlePartPagination = $beforeCurrentPage + 1 + $afterCurrentPage; // số trang phần giữa
+        $startMiddlePart = max($beginPartPagination + 1, $currentPage - $beforeCurrentPage); // bắt đầu phần giữa
+        $endMiddlePart = min($lastPage - $endPartPagination, $currentPage + $afterCurrentPage); // kết thúc phần giữa
 
         // dấu phân cách của tham số page
         $separator = strpos($baseUrl, '?') === false ? '?' : '&';
@@ -49,7 +61,7 @@ class Paginator implements IteratorAggregate
         }
 
         // links
-        $links = $this->getPaginationTemplate(compact('lastPage', 'currentPage', 'baseUrl', 'pageName', 'separator'));
+        $links = $this->getPaginationTemplate(compact('lastPage', 'currentPage', 'baseUrl', 'pageName', 'separator', 'beginPartPagination', 'endPartPagination', 'beforeCurrentPage', 'afterCurrentPage', 'middlePartPagination', 'startMiddlePart', 'endMiddlePart'));
 
         return $links;
     }
