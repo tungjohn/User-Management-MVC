@@ -39,7 +39,7 @@
     <table class="table table-responsive table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th scope="col"><input type="checkbox" name="" id="user-all"></th>
+                <th scope="col"><input type="checkbox" name="" id="user-all" class="check-all"></th>
                 <th scope="col">#</th>
                 <th scope="col">Họ Tên</th>
                 <th scope="col">Email</th>
@@ -58,7 +58,7 @@
                 $stt++;
             @endphp
             <tr>
-                <th scope="col"><input type="checkbox" name="" id="user-1" value="{{$user['id']}}"></th>
+                <th scope="col"><input type="checkbox" name="" id="user-1" class="check-item" value="{{$user['id']}}"></th>
                 <td>{{$stt}}</td>
                 <td>{{$user['name']}}</td>
                 <td>{{$user['email']}}</td>
@@ -85,7 +85,7 @@
     
     <div class="row">
         <div class="col-6">
-            <button class="btn btn-danger" disabled>Xóa đã chọn (<span id="number-selected">0</span>)</button>
+            <button class="btn btn-danger" id="delete-checked" disabled>Xóa đã chọn (<span id="number-checked">0</span>)</button>
         </div>
         <div class="col-6">
             {! $users->links() !}
