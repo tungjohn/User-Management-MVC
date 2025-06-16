@@ -75,23 +75,43 @@
                 <td>{! !empty($user['created_at']) ? $user['created_at'] : '' !}</td>
                 <td>
                     <a href="{{_WEB_ROOT . '/users/edit/' . $user['id']}}" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Sửa</a>
-                    <a href="{{_WEB_ROOT . '/users/delete/' . $user['id']}}" class="btn btn-danger btn-sm"><i class="fa fa-trash-o" aria-hidden="true"></i> Xóa</a>
+                    <a href="{{_WEB_ROOT . '/users/delete/' . $user['id']}}" class="btn btn-danger btn-sm delete-row"><i class="fa fa-trash-o" aria-hidden="true"></i> Xóa</a>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    
     <div class="row">
         <div class="col-6">
-            <button class="btn btn-danger" id="delete-checked" disabled>Xóa đã chọn (<span id="number-checked">0</span>)</button>
+            <form action="{{ _WEB_ROOT . '/users/delete/' }}" method="post">
+                <input type="hidden" name="ids" id="ids" value="">
+                <button type="submit" class="btn btn-danger" id="delete-checked" data-ids="" disabled>Xóa đã chọn (<span id="number-checked">0</span>)</button>
+            </form>
         </div>
         <div class="col-6">
             {! $users->links() !}
         </div>
     </div>
-        
-    
 </div>
+<script type="text/javascript">
+    // sau khi render xong view thì sẽ chạy đoạn này
+    document.addEventListener('DOMContentLoaded', function() {
+        let actionAlert = '{! $action ?? "" !}';
+        if (actionAlert != '') {
+            let icon = '{! $icon ?? "" !}';
+            let message = '{! $message ?? "" !}';
+            
+            if (icon != '' && message != '') {
+                Swal.fire({
+                    icon: icon,
+                    title: actionAlert,
+                    text: message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
+    
+</script>
 

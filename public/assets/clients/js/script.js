@@ -1,4 +1,4 @@
-// Hiển thị/ ẩn mật khẩu
+// toggle the visibility of password fields
 document.querySelectorAll('.toggle-password').forEach(function (toggleIcon) {
     toggleIcon.addEventListener('click', function () {
         
@@ -12,30 +12,47 @@ document.querySelectorAll('.toggle-password').forEach(function (toggleIcon) {
 });
 
 // check all checkboxes
-const checkAll = document.querySelectorAll('.check-all');
+const checkAll = document.querySelector('.check-all');
 const checkboxes = document.querySelectorAll('.check-item');
 const deleteChecked = document.querySelector('#delete-checked');
-var numChecked = 0;
+let ids = [];
 
-if (checkAll.length > 0 && checkboxes.length > 0) {
+if (checkAll && checkboxes.length > 0) {
     // check all checkboxes when the "check all" checkbox is clicked
-    checkAll[0].addEventListener('click', function () {
+    checkAll.addEventListener('click', function () {
         checkboxes.forEach(function (checkbox) {
-            checkbox.checked = checkAll[0].checked;
-            const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-            deleteChecked.disabled = !anyChecked;
+            checkbox.checked = checkAll.checked;
+            toggleDeleteAll();
         });
         // update the count of checked items
-        
-        numChecked = checkAll[0].checked ? checkboxes.length : 0;
-        document.querySelector('#number-checked').textContent = numChecked;
+        document.querySelector('#number-checked').textContent = numChecked();
+
+        // push or remove the checkbox value from the ids array
+        if (checkAll.checked) {
+            ids = Array.from(checkboxes).map(cb => cb.value);
+        } else {
+            ids = [];
+        }
+
+        // Update the hidden input with the selected IDs
+        document.querySelector('#ids').value = ids.join(',');
     });
 
     // update "check all" checkbox when any individual checkbox is clicked
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener('click', function () {
             const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            checkAll[0].checked = allChecked;
+            checkAll.checked = allChecked;
+
+            // push or remove the checkbox value from the ids array
+            if (checkbox.checked && !ids.includes(checkbox.value)) {
+                ids.push(checkbox.value);
+            } else if (!checkbox.checked) {
+                ids = ids.filter(id => id !== checkbox.value);
+            }
+            
+            // Update the hidden input with the selected IDs
+            document.querySelector('#ids').value = ids.join(','); 
         });
     });
 
@@ -43,24 +60,42 @@ if (checkAll.length > 0 && checkboxes.length > 0) {
         // enable/disable delete button based on checked items
         checkboxes.forEach(function (checkbox) {
             checkbox.addEventListener('click', function () {
-                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-                deleteChecked.disabled = !anyChecked;
+                toggleDeleteAll();
                 // update the count of checked items
-                numChecked = Array.from(checkboxes).filter(cb => cb.checked).length;
-                document.querySelector('#number-checked').textContent = numChecked;
+                document.querySelector('#number-checked').textContent = numChecked();
             });
         });
-
-        
     }
 }
 
+// Enable or disable the delete button based on checked items
 function toggleDeleteAll() {
     const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-    
     deleteChecked.disabled = !anyChecked;
-    
-    // update the count of checked items
-    numChecked = anyChecked ? Array.from(checkboxes).filter(cb => cb.checked).length : 0;
-    document.querySelector('#number-checked').textContent = numChecked;
 }
+
+// Count the number of checked checkboxes
+function numChecked() {
+    return Array.from(checkboxes).filter(cb => cb.checked).length;
+}
+
+// Show the modal when the delete button is clicked
+deleteChecked.addEventListener('click', function (e) {
+    e.preventDefault();
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            e.target.closest('form').submit();
+        }
+    });
+});
+
+// 
+

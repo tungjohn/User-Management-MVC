@@ -60,4 +60,10 @@ class UserModel extends Model {
         ];
         return $status;
     }
+
+    public function deleteManyUsers($ids) {
+        return $this->db->table($this->tableFill())
+            ->whereIn('id', $ids)
+            ->delete();
+    }
 }

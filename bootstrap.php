@@ -31,6 +31,8 @@ if (!empty($configs_dir)) {
     }
 }
 
+require_once 'core/Route.php'; // Load Route
+
 // load all service (các helper)
 if (!empty($config['app']['service'])) {
     $allSerives = $config['app']['service'];
@@ -57,8 +59,7 @@ require_once 'core/Load.php'; // Load Load
 // Middlewares
 require_once 'core/Middlewares.php'; // Load Middlewares
 
-//require_once 'configs/routes.php'; // Load routes config
-require_once 'core/Route.php'; // Load Route
+
 require_once 'core/Session.php'; // Load Session
 
 // kiểm tra config và load Database

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="<?php echo _ASSET_DIR ?>/clients/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo _ASSET_DIR ?>/clients/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
     <?php $this->render('block/header'); ?>

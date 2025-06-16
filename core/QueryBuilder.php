@@ -97,6 +97,21 @@ trait QueryBuilder
         return $this;
     }
 
+    public function whereIn($field, $value = [])
+    {
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        if (empty($this->where)) {
+            $this->operator = 'WHERE ';
+        } else {
+            $this->operator = ' AND ';
+        }
+        $this->where .= "$this->operator {$field} IN ('" . implode("','", $value) . "')";
+
+        return $this;
+    }
+
     public function select($field = '*')
     {
         $this->selectField = $field;
