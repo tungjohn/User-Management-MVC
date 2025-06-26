@@ -2,7 +2,7 @@
 <hr>
 <div class="row mb-3">
     <div class="col-6">
-        <a href="#" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Thêm mới</a>
+        <a href="/users/create" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Thêm mới</a>
     </div>
 </div>
 
@@ -94,24 +94,5 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    // sau khi render xong view thì sẽ chạy đoạn này
-    document.addEventListener('DOMContentLoaded', function() {
-        let actionAlert = '{! $action ?? "" !}';
-        if (actionAlert != '') {
-            let icon = '{! $icon ?? "" !}';
-            let message = '{! $message ?? "" !}';
-            
-            if (icon != '' && message != '') {
-                Swal.fire({
-                    icon: icon,
-                    title: actionAlert,
-                    text: message,
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    });
-    
-</script>
+
 

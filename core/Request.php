@@ -91,7 +91,7 @@ class Request
      * Validate
      */
 
-    public function validate() {
+    public function validate($rules = []) {
         // lấy các field từ form
         $dataFields = $this->getFields();
         
@@ -99,11 +99,17 @@ class Request
         $messages = $this->__messages;
         
         // lấy các rules
-        $rules = $this->__rules;
+        if (empty($rules)) {
+            // nếu không truyền rules thì lấy từ thuộc tính __rules
+            $rules = $this->__rules;
+        } else {
+            // nếu có truyền rules thì gán vào thuộc tính __rules
+            $this->__rules = $rules;
+        }
         
+        $validate = true;
         // xử lý rules
         if (!empty($rules)) {
-            $validate = true;
             foreach ($rules as $fieldName => $rulesItem) {
                 if (is_string($rulesItem)) {
                     $rulesItemArr = explode('|', $rulesItem);

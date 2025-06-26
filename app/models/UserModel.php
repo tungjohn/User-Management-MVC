@@ -66,4 +66,10 @@ class UserModel extends Model {
             ->whereIn('id', $ids)
             ->delete();
     }
+
+    public function insert($data) {
+        $this->db->table($this->tableFill())
+            ->insert($data);
+        return $this->db->getInsertId();
+    }
 }

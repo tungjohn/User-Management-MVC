@@ -30,3 +30,23 @@
 </body>
 <script src="<?php echo _PUBLIC_ROOT . '/assets/clients/js/' ?>script.js"></script>
 </html>
+<script type="text/javascript">
+    // sau khi render xong view thì sẽ chạy đoạn này
+    document.addEventListener('DOMContentLoaded', function() {
+        let actionAlert = "<?php echo $action ?>";
+        if (actionAlert != '') {
+            let icon = "<?php echo $icon ?>";
+            let message = "<?php echo $message ?>";
+            
+            if (icon != '' && message != '') {
+                Swal.fire({
+                    icon: icon,
+                    title: actionAlert,
+                    text: message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
+    
+</script>
