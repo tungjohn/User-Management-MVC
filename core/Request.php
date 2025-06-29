@@ -232,9 +232,9 @@ class Request
             }
         }
 
-        $sessionKey = Session::isValidSession(); // lấy session key
+        $sessionKey = Session::isValidSession(); // get session key
         Session::flash($sessionKey . '_errors', $this->errors()); // set session errors
-        Session::flash($sessionKey . '_old', $dataFields); // set session errors
+        Session::flash($sessionKey . '_old', $dataFields); // set session params
         
         return $validate;
     }

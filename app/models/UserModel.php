@@ -72,4 +72,10 @@ class UserModel extends Model {
             ->insert($data);
         return $this->db->getInsertId();
     }
+
+    public function updateUser($id, $data) {
+        return $this->db->table($this->tableFill())
+            ->where('id', '=', $id)
+            ->update($data);
+    }
 }
