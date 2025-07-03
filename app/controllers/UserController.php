@@ -243,7 +243,23 @@ class UserController extends Controller {
         return redirect('/users/edit/' . $id);
     }
 
-    public function delete() {
+    public function delete($id) {
+        // Kiểm tra xem người dùng có tồn tại hay không
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            // Thông báo lỗi nếu người dùng không tồn tại
+            $this->flashMessage('Xóa người dùng', 'error', 'error', 'Người dùng không tồn tại');
+            return redirect('/users');
+        }
+
+        // Xóa người dùng
+        $this->userModel->deleteUser($id);
+        // Thông báo thành công
+        $this->flashMessage('Xóa người dùng', 'success', 'success', 'Xóa người dùng thành công!');
+        return redirect('/users');
+    }
+
+    public function deleteMany() {
         $request = new Request();
         $dataFields = $request->getFields();
 

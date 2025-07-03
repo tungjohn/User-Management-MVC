@@ -80,22 +80,69 @@ function numChecked() {
 }
 
 // Show the modal when the delete button is clicked
-deleteChecked.addEventListener('click', function (e) {
-    e.preventDefault();
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            e.target.closest('form').submit();
-        }
+if (deleteChecked) {
+    deleteChecked.addEventListener('click', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                e.target.closest('form').submit();
+            }
+        });
     });
-});
+}
 
-// 
+// delete row user
+const deleteButton = document.querySelector('.delete-row');
+if (deleteButton) {
+    deleteButton.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the delete URL
+                    window.location.href = this.href;
+                }
+            });
+        });
+    });
+}
+
+
+// cancel button
+const cancelButton = document.querySelector('.cancel-button');
+if (cancelButton) {
+    cancelButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to exit? All data will not be saved!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the back link
+                window.history.back();
+            }
+        });
+    });
+}
 

@@ -78,4 +78,10 @@ class UserModel extends Model {
             ->where('id', '=', $id)
             ->update($data);
     }
+
+    public function deleteUser($id) {
+        return $this->db->table($this->tableFill())
+            ->where('id', '=', $id)
+            ->delete();
+    }
 }

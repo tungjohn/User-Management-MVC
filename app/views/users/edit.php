@@ -1,7 +1,7 @@
 <h5 class="">{{$page_title}}</h5>
 <hr>
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <form class="row g-3" style="max-width: 700px; width: 100%;" method="post" action="/users/update/{{$user['id']}}">
+    <form class="row g-3" style="max-width: 700px; width: 100%;" method="post" id="form-user" action="/users/update/{{$user['id']}}">
         <div class="col-md-12">
             <label for="name" class="form-label">Tài khoản</label>
             <input type="text" name="name" class="form-control mx-auto" id="name" value="{{ old('name', $user['name']) }}" required>
@@ -43,7 +43,7 @@
         </div>
         <div class="col-12 text-center">
             <button class="btn btn-primary" type="submit">Lưu</button>
-            <button class="btn btn-danger" type="button">Hủy</button>
+            <button class="btn btn-danger cancel-button" type="button">Hủy</button>
         </div>
     </form>
 </div>
