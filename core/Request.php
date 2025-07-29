@@ -9,10 +9,16 @@ class Request
     private $__rules = [];
     private $__messages = [];
     private $__errors = [];
+    private $__typeData = [];
     public $db;
 
     public function __construct() {
+        global $config;
         $this->db = new Database();
+        // lấy các kiểu dữ liệu cho phép
+        if (!empty($config['request']['type_data'])) {
+            $this->__typeData = $config['request']['type_data'];
+        }
     }
 
     public function getMethod()
@@ -69,6 +75,83 @@ class Request
         }
 
         return $dataFields;
+    }
+
+    public function getFieldPost($key, $typeData = 'string', $default = null)
+    {
+        if (!in_array($typeData, $this->__typeData)) {
+            $type = 'string'; // Mặc định là string nếu kiểu không hợp lệ
+        }
+
+        if ($this->isPost()) {
+            // Xử lý lấy dữ liệu với phương thức Post
+            if (isset($_POST[$key])) {
+                $value = $this->filter_input_value($key, 'POST', $typeData);
+                if ($value !== false) {
+                    $sessionKey = Session::isValidSession(); // get session key
+                    $oldData = !empty(Session::data($sessionKey . '_old')) ? Session::data($sessionKey . '_old') : [];
+                    $oldDataUpdated = array_merge($oldData, [$key => $value]);
+                    Session::flash($sessionKey . '_old', $oldDataUpdated); // set session
+                    return $value;
+                }                
+            }
+        }
+        return $default;
+    }
+
+    public function getFieldGet($key, $typeData = 'string', $default = null)
+    {
+        if (!in_array($typeData, $this->__typeData)) {
+            $typeData = 'string'; // Mặc định là string nếu kiểu không hợp lệ
+        }
+
+        if ($this->isGet()) {
+            // Xử lý lấy dữ liệu với phương thức Post
+            if (isset($_GET[$key])) {
+                $value = $this->filter_input_value($key, 'GET', $typeData);
+                if ($value !== false) {
+                    $sessionKey = Session::isValidSession(); // get session key
+                    Session::flash($sessionKey . '_old', array_merge(Session::flash($sessionKey . '_old'), [$key => $value])); // set session params
+                    return $value;
+                }                
+            }
+        }
+        return $default;
+    }
+
+    public function filter_input_value($key, $typeRequest = 'GET', $typeData = 'string') {
+        if (!in_array($typeData, $this->__typeData)) {
+            $typeData = 'string'; // Mặc định là string nếu kiểu không hợp lệ
+        }
+
+        $inputType = $typeRequest == 'POST' ? INPUT_POST : INPUT_GET;
+
+        switch ($typeData) {
+            case 'string':
+                return filter_input($inputType, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+            case 'int':
+                return filter_input($inputType, $key, FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_ALLOW_FRACTION, FILTER_SANITIZE_SPECIAL_CHARS);
+            case 'float':
+                return filter_input($inputType, $key, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION, FILTER_SANITIZE_SPECIAL_CHARS);
+            case 'bool':
+                return filter_input($inputType, $key, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            case 'array':
+                return filter_input($inputType, $key, FILTER_SANITIZE_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY);
+            default:
+                return filter_input($inputType, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        }
+
+        return false; // Trả về false nếu không hợp lệ
+    }
+
+    public function getPath() {
+        // Lấy đường dẫn hiện tại
+        $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+        if (empty($path)) {
+            $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        }
+        $path = trim($path, '/');
+        return $path;
     }
 
     /**

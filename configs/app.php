@@ -7,7 +7,7 @@ $config['app'] = [
         
     ],
     'globalMiddleware' => [
-        
+        AuthMiddleware::class
     ],
     'boot' => [
         AppServiceProvider::class

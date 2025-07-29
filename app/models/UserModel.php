@@ -84,4 +84,11 @@ class UserModel extends Model {
             ->where('id', '=', $id)
             ->delete();
     }
+
+    public function getUserByEmail($email) {
+        return $this->db->select($this->fieldFill())
+            ->table($this->tableFill())
+            ->where('email', '=', $email)
+            ->first();
+    }
 }

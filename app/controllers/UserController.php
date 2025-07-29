@@ -295,10 +295,5 @@ class UserController extends Controller {
 
     }
 
-    public function flashMessage($action, $status, $icon, $message) {
-        Session::flash('action', $action);
-        Session::flash('status', $status);
-        Session::flash('icon', $icon);
-        Session::flash('message', $message);
-    }
+    
 }
