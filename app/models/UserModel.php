@@ -91,4 +91,11 @@ class UserModel extends Model {
             ->where('email', '=', $email)
             ->first();
     }
+
+    public function getUserById($id) {
+        return $this->db->select($this->fieldFill())
+            ->table($this->tableFill())
+            ->where('id', '=', $id)
+            ->first();
+    }
 }

@@ -13,3 +13,13 @@
     height: auto;
     margin: 0 auto;
 }
+
+#user-menu {
+    cursor: pointer;
+}
+
+.sub-menu {
+    list-style: none;
+    padding-left: 0;
+
+}

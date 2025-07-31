@@ -56,15 +56,18 @@ class AuthController extends Controller {
         }
         
         // Kiểm tra mật khẩu
-        
         if (Hash::check($password, $user['password'])) {
+            // kiểm tra user đã kích hoạt chưa
+            if ($user['status'] != 1) {
+                $this->flashMessage('Đăng nhập', 'error', 'error', 'User chưa kích hoạt!');
+                return redirect('auth/login');
+            }
+
             // Lưu thông tin người dùng vào session
-            $session_login = [
+            $userLogin = [
                 'id' => $user['id'],
-                'email' => $user['email'],
-                'role' => $user['role'],
             ];
-            Session::data('user_login', $session_login);
+            Session::data('userLogin', $userLogin);
 
             // Hiển thị thông báo thành công
             // $this->flashMessage('Đăng nhập', 'success', 'success', 'Đăng nhập thành công!');
@@ -74,5 +77,13 @@ class AuthController extends Controller {
             $this->flashMessage('Đăng nhập', 'error', 'error', 'Email hoặc mật khẩu không chính xác!');
             return redirect('auth/login');
         }
+    }
+
+    public function logOut() {
+        if (Session::data('userLogin')) {
+            Session::destroy('userLogin');
+            return redirect('auth/login');
+        }
+        return redirect('/');
     }
 }
