@@ -33,10 +33,10 @@
 <script type="text/javascript">
     // sau khi render xong view thì sẽ chạy đoạn này
     document.addEventListener('DOMContentLoaded', function() {
-        let actionAlert = "<?php echo $action ?>";
+        let actionAlert = "<?php echo $alertModal['action'] ?? '' ?>";
         if (actionAlert != '') {
-            let icon = "<?php echo $icon ?>";
-            let message = "<?php echo $message ?>";
+            let icon = "<?php echo $alertModal['icon'] ?? '' ?>";
+            let message = "<?php echo $alertModal['message'] ?? '' ?>";
             
             if (icon != '' && message != '') {
                 Swal.fire({

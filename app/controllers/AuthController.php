@@ -14,18 +14,11 @@ class AuthController extends Controller {
 
         $this->data['content'] = 'login/login';
         $this->data['page_title'] = 'Đăng nhập hệ thống';
-        $this->data['action'] = Session::flash('action');
-        $this->data['status'] = Session::flash('status');
-        $this->data['icon'] = Session::flash('icon');
-        $this->data['message'] = Session::flash('message');
-        // Render ra view
-        $this->render('layouts/auth', $this->data);                  
-    }
 
-    public function register() {
-        $this->data['params']['page_title'] = 'Đăng ký thành viên';
-        $this->data['content'] = 'login/register';
-        $this->data['page_title'] = 'Đăng ký thành viên';
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
+        
         // Render ra view
         $this->render('layouts/auth', $this->data);                  
     }
@@ -34,15 +27,30 @@ class AuthController extends Controller {
         // Xử lý đăng nhập
         $request = new Request();
         if (!$request->isPost()) {
-            $this->flashMessage('Thêm người dùng', 'success', 'success', 'Thêm người dùng thành công!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đăng nhập',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Invalid request method!'
+            ]);
             return redirect('auth/login');
         }
         if (!$request->getFieldPost('email')) {
-            $this->flashMessage('Đăng nhập', 'error', 'error', 'Email không được để trống!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đăng nhập',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Email không được để trống!'
+            ]);
             return redirect('auth/login');
         }
         if (!$request->getFieldPost('password')) {
-            $this->flashMessage('Đăng nhập', 'error', 'error', 'Mật khẩu không được để trống!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đăng nhập',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Mật khẩu không được để trống!'
+            ]);
             return redirect('auth/login');
         }
 
@@ -51,7 +59,12 @@ class AuthController extends Controller {
 
         $user = $this->userModel->getUserByEmail($email);
         if (!$user) {
-            $this->flashMessage('Đăng nhập', 'error', 'error', 'Email hoặc mật khẩu không chính xác!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đăng nhập',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Email hoặc mật khẩu không chính xác!'
+            ]);
             return redirect('auth/login');
         }
         
@@ -59,7 +72,12 @@ class AuthController extends Controller {
         if (Hash::check($password, $user['password'])) {
             // kiểm tra user đã kích hoạt chưa
             if ($user['status'] != 1) {
-                $this->flashMessage('Đăng nhập', 'error', 'error', 'User chưa kích hoạt!');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Đăng nhập',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'User chưa kích hoạt!'
+                ]);
                 return redirect('auth/login');
             }
 
@@ -74,7 +92,12 @@ class AuthController extends Controller {
             return redirect('/');
         } else {
             // Hiển thị thông báo lỗi
-            $this->flashMessage('Đăng nhập', 'error', 'error', 'Email hoặc mật khẩu không chính xác!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đăng nhập',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Email hoặc mật khẩu không chính xác!'
+            ]);
             return redirect('auth/login');
         }
     }
@@ -85,5 +108,13 @@ class AuthController extends Controller {
             return redirect('auth/login');
         }
         return redirect('/');
+    }
+
+    public function register() {
+        $this->data['params']['page_title'] = 'Đăng ký thành viên';
+        $this->data['content'] = 'login/register';
+        $this->data['page_title'] = 'Đăng ký thành viên';
+        // Render ra view
+        $this->render('layouts/auth', $this->data);                  
     }
 }

@@ -39,10 +39,9 @@ class UserController extends Controller {
         $this->data['params']['status'] = $status;
         $this->data['params']['keyword'] = $keyword;
 
-        $this->data['action'] = Session::flash('action');
-        $this->data['status'] = Session::flash('status');
-        $this->data['icon'] = Session::flash('icon');
-        $this->data['message'] = Session::flash('message');
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
 
         $this->data['content'] = 'users/index';
         $this->data['page_title'] = 'Quản lý người dùng';
@@ -56,10 +55,9 @@ class UserController extends Controller {
         $this->data['params']['groups'] = $this->userModel->getGroups();
         $this->data['params']['status'] = $this->userModel->getStatus();
 
-        $this->data['action'] = Session::flash('action');
-        $this->data['status'] = Session::flash('status');
-        $this->data['icon'] = Session::flash('icon');
-        $this->data['message'] = Session::flash('message');
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
 
         $this->data['content'] = 'users/create';
         // Render ra view
@@ -112,7 +110,12 @@ class UserController extends Controller {
 
             if (!$validate) {
                 // Thông báo lỗi
-                $this->flashMessage('Thêm người dùng', 'status', 'error', 'Có lỗi xảy ra trong quá trình thêm người dùng');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Thêm người dùng',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi xảy ra trong quá trình thêm người dùng'
+                ]);
                 return redirect('/users/create');
             }
 
@@ -131,11 +134,21 @@ class UserController extends Controller {
 
             if ($userid) {
                 // Thông báo thành công
-                $this->flashMessage('Thêm người dùng', 'success', 'success', 'Thêm người dùng thành công!');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Thêm người dùng',
+                    'status' => 'success',
+                    'icon' => 'success',
+                    'message' => 'Thêm người dùng thành công!'
+                ]);
                 return redirect('/users');
             } else {
                 // Thông báo lỗi
-                $this->flashMessage('Thêm người dùng', 'error', 'error', 'Có lỗi xảy ra trong quá trình thêm người dùng');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Thêm người dùng',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi xảy ra trong quá trình thêm người dùng'
+                ]);
                 return redirect('/users/create');
             }
         }
@@ -148,7 +161,12 @@ class UserController extends Controller {
         $user = $this->userModel->find($id);
         if (!$user) {
             // Thông báo lỗi nếu người dùng không tồn tại
-            $this->flashMessage('Sửa người dùng', 'error', 'error', 'Người dùng không tồn tại');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Sửa người dùng',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
             return redirect('/users');
         }
 
@@ -158,10 +176,9 @@ class UserController extends Controller {
         $this->data['params']['status'] = $this->userModel->getStatus();
         $this->data['params']['user'] = $user;
 
-        $this->data['action'] = Session::flash('action');
-        $this->data['status'] = Session::flash('status');
-        $this->data['icon'] = Session::flash('icon');
-        $this->data['message'] = Session::flash('message');
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
 
         $this->data['content'] = 'users/edit';
         // Render ra view
@@ -214,7 +231,12 @@ class UserController extends Controller {
 
             if (!$validate) {
                 // Thông báo lỗi
-                $this->flashMessage('Sửa người dùng', 'status', 'error', 'Có lỗi xảy ra trong quá trình sửa người dùng');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Sửa người dùng',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi xảy ra trong quá trình sửa người dùng'
+                ]);
                 return redirect('/users/edit/' . $id);
             }
 
@@ -232,11 +254,21 @@ class UserController extends Controller {
 
             if ($result) {
                 // Thông báo thành công
-                $this->flashMessage('Sửa thông tin người dùng', 'success', 'success', 'Sửa thông tin người dùng thành công!');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Sửa người dùng',
+                    'status' => 'success',
+                    'icon' => 'success',
+                    'message' => 'Sửa thông tin người dùng thành công!'
+                ]);
                 return redirect('/users');
             } else {
                 // Thông báo lỗi
-                $this->flashMessage('Sửa thông tin người dùng', 'error', 'error', 'Có lỗi xảy ra trong quá trình sửa thông tin người dùng');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Sửa thông tin người dùng',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi xảy ra trong quá trình sửa thông tin người dùng'
+                ]);
                 return redirect('/users/create');
             }
         }
@@ -248,14 +280,24 @@ class UserController extends Controller {
         $user = $this->userModel->find($id);
         if (!$user) {
             // Thông báo lỗi nếu người dùng không tồn tại
-            $this->flashMessage('Xóa người dùng', 'error', 'error', 'Người dùng không tồn tại');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Xóa người dùng',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
             return redirect('/users');
         }
 
         // Xóa người dùng
         $this->userModel->deleteUser($id);
         // Thông báo thành công
-        $this->flashMessage('Xóa người dùng', 'success', 'success', 'Xóa người dùng thành công!');
+        Session::flash('alertModal', $modal_detail = [
+            'action' => 'Xóa người dùng',
+            'status' => 'error',
+            'icon' => 'error',
+            'message' => 'Xóa người dùng thành công!'
+        ]);
         return redirect('/users');
     }
 
@@ -278,18 +320,33 @@ class UserController extends Controller {
             $ids = array_filter(array_unique(($ids))); 
             // Kiểm tra nếu mảng ids rỗng
             if (empty($ids)) {
-                $this->flashMessage('Xóa danh sách người dùng', 'status', 'error', 'Không có dữ liệu nào được chọn để xóa');
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Xóa danh sách người dùng',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Không có dữ liệu nào được chọn để xóa'
+                ]);
                 redirect('/users');
             }
 
             // Xóa nhiều người dùng
             $this->userModel->deleteManyUsers($ids);
             // Thông báo thành công
-            $this->flashMessage('Xóa danh sách người dùng', 'success', 'success', 'Xóa dữ liệu thành công!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Xóa danh sách người dùng',
+                'status' => 'success',
+                'icon' => 'success',
+                'message' => 'Xóa dữ liệu thành công!'
+            ]);
             redirect('/users');
         } else {
             // Thông báo lỗi nếu không có người dùng nào được chọn
-            $this->flashMessage('Xóa danh sách người dùng','error', 'error', 'Không có dữ liệu nào được chọn để xóa!');
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Xóa danh sách người dùng',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Không có dữ liệu nào được chọn để xóa!'
+            ]);
             redirect('/users');
         }
 
