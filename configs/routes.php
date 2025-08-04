@@ -9,6 +9,6 @@ $routes['trang-chu'] = 'HomeController';
 $routes['users'] = 'UserController';
 $routes['auth'] = 'AuthController';
 $routes['auth/do-login'] = 'AuthController/loginSubmit';
-
+$routes['auth/do-register'] = 'AuthController/registerSubmit';
 
 ?>

@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="boderder p-3 mt-3 mb-3 bg-light rounded shadow">
-        <form class="px-3" action="" method="POST">
+        <form class="px-3" action="/auth/do-register" method="POST">
             <div class="row mb-3 text-center">
                 <img class="logo-login py-3" src="<?php echo _ASSET_DIR ?>/clients/images/coder-logo.png" alt="">
                 <h2>{{$page_title}}</h2>

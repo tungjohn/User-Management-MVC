@@ -11,14 +11,18 @@ class AuthMiddleware extends Middlewares {
             'auth/login',
             'auth/register',
             'auth/do-login',
+            'auth/do-register',
+            'auth/active',
         ];
         
+        // check xem user đã đăng nhập chưa
         if (Session::data('userLogin')) {
             // đưa userInfo vào view để hiển thị
             $userLoginId = Session::data('userLogin')['id'];
             $userModel = Load::model('UserModel');
             $userInfo = $userModel->getUserById($userLoginId);
             if ($userInfo && $userInfo ['status'] == 1) {
+                // share thông tin user qua các view
                 View::share(['userInfo' => $userInfo]);
 
                 // Nếu đã đăng nhập, không cần redirect
@@ -31,6 +35,13 @@ class AuthMiddleware extends Middlewares {
             // nếu không tìm thấy thông tin hoặc user chưa kích hoạt -> redirect trang đăng nhập
             Session::destroy('userInfo');
             return redirect('auth/login');
+        }
+
+        // check xem user đã đăng ký chưa
+        if ($path == 'auth/active') {
+            if (!Session::data('userActive')) {
+                redirect('auth/register');
+            }
         }
 
         // Nếu chưa đăng nhập và đường dẫn không phải là các đường dẫn được loại trừ thì redirect đến trang đăng nhập
