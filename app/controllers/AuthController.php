@@ -114,6 +114,10 @@ class AuthController extends Controller {
         $this->data['params']['page_title'] = 'Đăng ký thành viên';
         $this->data['content'] = 'login/register';
         $this->data['page_title'] = 'Đăng ký thành viên';
+
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
         // Render ra view
         $this->render('layouts/auth', $this->data);                  
     }
@@ -161,6 +165,8 @@ class AuthController extends Controller {
 
             // Lưu người dùng mới
             $password = Hash::make($dataFields['password']);
+            // tạo token lưu db
+            $activeToken = md5(uniqid());
 
             $userData = [
                 'name' => $dataFields['name'],
@@ -168,6 +174,7 @@ class AuthController extends Controller {
                 'password' => $password,
                 'group_id' => 3, // member
                 'status' => 2, // chưa kích hoạt
+                'active_token' => $activeToken,
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             $userid = $this->userModel->insert($userData);
@@ -183,13 +190,26 @@ class AuthController extends Controller {
                 // lưu session active
                 Session::flash('userActive', $userActive = [
                     'id' => $userid,
-                    'keyActive' => md5($userid . '_' . $dataFields['email']),
                 ]);
 
-                // gửi mail kích hoạt tk
+                // tạo link kích hoạt
+                $linkActive = _WEB_ROOT . '/auth/active/?token=' . $activeToken;
 
-                // redirect sang trang active
-                return redirect('/auth/active');
+                // gửi mail kích hoạt tk
+                $userName = $dataFields['name'];
+                $subject = "User mangagement - Kích hoạt tài khoản $userName";
+                $message = "<p>Quý khách đã đăng ký tài khoản <b>$userName</b> tại website <a href='" . _WEB_ROOT . "'>" . _WEB_ROOT . "</a></p>";
+                $message .= "<p>Để kích hoạt và sử dụng tài khoản, quý khách vui lòng ấn vào <a href='$linkActive'>link kích hoạt</a>.</p>";
+                $message .= "<p>Vui lòng bỏ qua nếu quý khách không phải là chủ của tài khoản này!</p>";
+                Mail::send($dataFields['email'], $subject, $message);
+
+                // chuyển hướng đến trang active-account
+                Session::flash('registerSuccess', $active_content = [
+                    'content' => '✅ Đăng ký tài khoản thành công! Bạn cần truy cập email và nhấn vào link xác thực để kích hoạt tài khoản trước khi đăng nhập và sử dụng dịch vụ.',
+                    'active_action_content' => 'Gửi lại email xác thực!',
+                    'active_action_link' => 'javascript:void(0)',
+                ]);
+                return redirect('/auth/active-account');
             } else {
                 // Thông báo lỗi
                 Session::flash('alertModal', $modal_detail = [
@@ -204,10 +224,56 @@ class AuthController extends Controller {
         return redirect('/auth/register');
     }
 
-    public function active() {
+    public function activeAccount() {
         $this->data['params']['page_title'] = 'Kích hoạt tài khoản';
-        $this->data['content'] = 'login/active';
+        $this->data['content'] = 'login/active-account';
         $this->data['page_title'] = 'Kích hoạt tài khoản';
+
+        if (Session::data('registerSuccess')) {
+            $this->data['params']['activePage'] = Session::data('registerSuccess');
+        } elseif (Session::data('activeSuccess')) {
+            $this->data['params']['activePage'] = Session::flash('activeSuccess');
+        }
+
         $this->render('layouts/auth', $this->data);
+    }
+
+    public function active() {
+        // lấy token
+        $request = new Request();
+        $activeToken = $request->getFieldGet('token', 'string', '');
+        $dbObject = new DB();
+        $user_active = $dbObject->db->select('*')
+            ->table('users')
+            ->where('active_token', '=', $activeToken)
+            ->where('active_token', '!=', '')
+            ->where('status', '!=', 1)
+            ->first();
+
+        if ($user_active) {
+            // xóa active_token
+            $this->userModel->updateUser($user_active['id'], [
+                'active_token' => '',
+                'status' => 1
+            ]);
+
+            // xóa session đăng ký 
+            if (Session::data('registerSuccess')) {
+                Session::destroy('registerSuccess');
+            }
+            if (Session::data('userActive')) {
+                Session::destroy('userActive');
+            }
+
+            // redirect sang trang active-account
+            Session::flash('activeSuccess', $active_content = [
+                'content' => '✅ Kích hoạt tài khoản thành công! Quý khách vui lòng đăng nhập để sử dụng dịch vụ!',
+                'active_action_content' => 'Đăng nhập',
+                'active_action_link' => '/auth/login',
+            ]);
+            return redirect('/auth/active-account');
+        } else {
+            return redirect('/auth/login');
+        }
     }
 }

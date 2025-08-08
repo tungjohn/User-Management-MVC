@@ -48,6 +48,13 @@ if (!empty($config['app']['service'])) {
 // Load Hash Class
 require_once 'core/Hash.php'; // Load Hash Class
 
+// load PHPMailer
+require_once 'core/PHPMailer/Exception.php';
+require_once 'core/PHPMailer/PHPMailer.php';
+require_once 'core/PHPMailer/SMTP.php';
+
+require_once 'core/Mail.php'; // load Mail
+
 // Load ServiceProvider Class
 require_once 'core/ServiceProvider.php'; // Load ServiceProvider Class
 
@@ -58,7 +65,6 @@ require_once 'core/Load.php'; // Load Load
 
 // Middlewares
 require_once 'core/Middlewares.php'; // Load Middlewares
-
 
 require_once 'core/Session.php'; // Load Session
 
@@ -87,6 +93,7 @@ if (!empty($helpers_dir)) {
         }
     }
 }
+
 
 require_once 'app/App.php'; // load App
 require_once 'core/Model.php'; // Load base Model

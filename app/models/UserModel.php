@@ -98,4 +98,11 @@ class UserModel extends Model {
             ->where('id', '=', $id)
             ->first();
     }
+
+    public function getUser($field, $compare, $value) {
+        return $this->db->select($this->fieldFill())
+            ->table($this->tableFill())
+            ->where($field, $compare, $value)
+            ->first();
+    }
 }

@@ -10,5 +10,6 @@ $routes['users'] = 'UserController';
 $routes['auth'] = 'AuthController';
 $routes['auth/do-login'] = 'AuthController/loginSubmit';
 $routes['auth/do-register'] = 'AuthController/registerSubmit';
+$routes['auth/active-account'] = 'AuthController/activeAccount';
 
 ?>

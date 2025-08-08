@@ -9,18 +9,20 @@
             <div class="row mb-3">
                 <div class="col-sm-12 ">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="name" placeholder="" name="name" required>
+                        <input type="text" class="form-control" id="name" placeholder="" name="name" value="{{ old('name') }}" required>
                         <label for="name">Họ và tên</label>
                     </div>
+                    {! form_error('name', '<span style="color: red;">', '</span>') !}
                 </div>
             </div>
             
             <div class="row mb-3">
                 <div class="col-sm-12 ">
                     <div class="form-floating">
-                        <input type="email" class="form-control" id="email" placeholder="" name="email" required>
+                        <input type="email" class="form-control" id="email" placeholder="" name="email" value="{{ old('email') }}" required>
                         <label for="email">Email</label>
                     </div>
+                    {! form_error('email', '<span style="color: red;">', '</span>') !}
                 </div>
             </div>
 
@@ -31,6 +33,7 @@
                         <label for="password">Mật khẩu</label>
                         <i class="fa fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer;" aria-hidden="true"></i>
                     </div>
+                    {! form_error('password', '<span style="color: red;">', '</span>') !}
                 </div>
             </div>
 
@@ -41,6 +44,7 @@
                         <label for="confirm_password">Xác nhận mật khẩu</label>
                         <i class="fa fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer;" aria-hidden="true"></i>
                     </div>
+                    {! form_error('confirm_password', '<span style="color: red;">', '</span>') !}
                 </div>
             </div>
             

@@ -5,14 +5,16 @@ class AuthMiddleware extends Middlewares {
         // Middleware handle() xử lý trước khi vào controller
         $request = new Request();
         $path = $request->getPath();
-
+        
         $excludedPaths = [
             // Thêm các đường dẫn không cần xác thực tại đây
             'auth/login',
             'auth/register',
             'auth/do-login',
             'auth/do-register',
+            'auth/active-account',
             'auth/active',
+            '(auth\/active)\/*\?*.+',
         ];
         
         // check xem user đã đăng nhập chưa
@@ -46,6 +48,11 @@ class AuthMiddleware extends Middlewares {
 
         // Nếu chưa đăng nhập và đường dẫn không phải là các đường dẫn được loại trừ thì redirect đến trang đăng nhập
         if (!in_array($path, $excludedPaths)) {
+            foreach ($excludedPaths as $valuePath) {
+                if (preg_match('~' . $valuePath . '~is', $path)) {
+                    return;
+                }
+            }
             return redirect('auth/login');
         }
 

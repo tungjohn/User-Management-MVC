@@ -106,12 +106,14 @@ class Request
         }
 
         if ($this->isGet()) {
-            // Xử lý lấy dữ liệu với phương thức Post
+            // Xử lý lấy dữ liệu với phương thức Get
             if (isset($_GET[$key])) {
                 $value = $this->filter_input_value($key, 'GET', $typeData);
                 if ($value !== false) {
                     $sessionKey = Session::isValidSession(); // get session key
-                    Session::flash($sessionKey . '_old', array_merge(Session::flash($sessionKey . '_old'), [$key => $value])); // set session params
+                    $oldData = !empty(Session::data($sessionKey . '_old')) ? Session::data($sessionKey . '_old') : [];
+                    $oldDataUpdated = array_merge($oldData, [$key => $value]);
+                    Session::flash($sessionKey . '_old', $oldDataUpdated); // set session
                     return $value;
                 }                
             }

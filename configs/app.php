@@ -4,7 +4,7 @@ $config['app'] = [
         HtmlHelper::class
     ],
     'routeMiddleware' => [
-        
+        'auth/active-account' => ActiveAccountMiddleware::class
     ],
     'globalMiddleware' => [
         AuthMiddleware::class
