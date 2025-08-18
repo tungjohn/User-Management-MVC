@@ -15,6 +15,7 @@ class AuthMiddleware extends Middlewares {
             'auth/active-account',
             'auth/active',
             '(auth\/active)\/*\?*.+',
+            'auth/resend-email-active',
         ];
         
         // check xem user đã đăng nhập chưa

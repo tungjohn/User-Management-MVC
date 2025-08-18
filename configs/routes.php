@@ -11,5 +11,6 @@ $routes['auth'] = 'AuthController';
 $routes['auth/do-login'] = 'AuthController/loginSubmit';
 $routes['auth/do-register'] = 'AuthController/registerSubmit';
 $routes['auth/active-account'] = 'AuthController/activeAccount';
+$routes['auth/resend-email-active'] = 'AuthController/resendEmailActive';
 
 ?>
