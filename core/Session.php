@@ -80,4 +80,8 @@ class Session {
             self::showErrors('Session key is empty');
         }
     }
+
+    public static function id() {
+        return session_id();
+    }
 }

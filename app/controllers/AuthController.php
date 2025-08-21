@@ -87,6 +87,12 @@ class AuthController extends Controller {
             ];
             Session::data('userLogin', $userLogin);
 
+            // lưu session id khi user đăng nhập
+            $this->userModel->updateUser($user['id'], [
+                'session_id' => Session::id(),
+                'update_at' => date('Y-m-d H:i:s')
+            ]);
+
             // Hiển thị thông báo thành công
             // $this->flashMessage('Đăng nhập', 'success', 'success', 'Đăng nhập thành công!');
             return redirect('/');
@@ -104,8 +110,18 @@ class AuthController extends Controller {
 
     public function logOut() {
         if (Session::data('userLogin')) {
-            Session::destroy('userLogin');
-            return redirect('auth/login');
+            $user = $this->userModel->getUserById(Session::data('userLogin')['id']);
+
+            if (!empty($user)) {
+                // xóa session id khi user đăng xuất
+                $this->userModel->updateUser($user['id'], [
+                    'session_id' => '',
+                    'update_at' => date('Y-m-d H:i:s')
+                ]);
+                Session::destroy('userLogin');
+                
+                return redirect('auth/login');
+            }
         }
         return redirect('/');
     }

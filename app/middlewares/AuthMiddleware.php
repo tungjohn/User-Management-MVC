@@ -24,7 +24,7 @@ class AuthMiddleware extends Middlewares {
             $userLoginId = Session::data('userLogin')['id'];
             $userModel = Load::model('UserModel');
             $userInfo = $userModel->getUserById($userLoginId);
-            if ($userInfo && $userInfo ['status'] == 1) {
+            if ($userInfo && $userInfo['status'] == 1 && $userInfo['session_id'] == Session::id()) {
                 // share thông tin user qua các view
                 View::share(['userInfo' => $userInfo]);
 
@@ -36,7 +36,7 @@ class AuthMiddleware extends Middlewares {
                 return;
             }
             // nếu không tìm thấy thông tin hoặc user chưa kích hoạt -> redirect trang đăng nhập
-            Session::destroy('userInfo');
+            Session::destroy('userLogin');
             return redirect('auth/login');
         }
 
