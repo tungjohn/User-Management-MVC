@@ -16,6 +16,10 @@ class AuthMiddleware extends Middlewares {
             'auth/active',
             '(auth\/active)\/*\?*.+',
             'auth/resend-email-active',
+            'auth/forget-password',
+            'auth/send-token-reset-password',
+            'auth/reset-password',
+            'auth/submit-reset-password',
         ];
         
         // check xem user đã đăng nhập chưa

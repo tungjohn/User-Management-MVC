@@ -12,5 +12,9 @@ $routes['auth/do-login'] = 'AuthController/loginSubmit';
 $routes['auth/do-register'] = 'AuthController/registerSubmit';
 $routes['auth/active-account'] = 'AuthController/activeAccount';
 $routes['auth/resend-email-active'] = 'AuthController/resendEmailActive';
+$routes['auth/forget-password'] = 'AuthController/forgetPassword';
+$routes['auth/send-token-reset-password'] = 'AuthController/sendTokenResetPassword';
+$routes['auth/reset-password'] = 'AuthController/resetPassword';
+$routes['auth/submit-reset-password'] = 'AuthController/submitResetPassword';
 
 ?>

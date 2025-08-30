@@ -25,12 +25,17 @@
             </div>
             
             <div class="row mb-3">
-                <div class="col-sm-12">
+                <div class="col-sm-6">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
                         <label class="form-check-label" for="remember_me">
                             Duy trì đăng nhập
                         </label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-end">
+                        <a href="<?php echo _WEB_ROOT . '/auth/forget-password' ?>" title="Quên mật khẩu">Quên mật khẩu</a>
                     </div>
                 </div>
             </div>

@@ -382,4 +382,241 @@ class AuthController extends Controller {
         
         return redirect('/auth/active-account');
     }
+    
+    public function forgetPassword() {
+        $this->data['params']['page_title'] = 'Quên mật khẩu';
+        $this->data['content'] = 'login/forget-password';
+        $this->data['page_title'] = 'Quên mật khẩu';
+
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
+        if (Session::data('sendTokenStatus')) {
+            $this->data['params']['sendTokenStatus'] = Session::flash('sendTokenStatus');
+        }
+        if (Session::data('sendSuccess')) {
+            $this->data['params']['sendSuccess'] = Session::flash('sendSuccess');
+        }
+        // Render ra view
+        $this->render('layouts/auth', $this->data);                  
+    }
+
+    public function sendTokenResetPassword() {
+        // xử lý đăng ký
+        $request = new Request();
+        if ($request->isPost()) {
+            $dataFields = $request->getFields();
+            // Validate dữ liệu
+            $request->rules([
+                'email' => ['required', 'email', 'min:8'],
+            ]);
+            $request->message([
+                'email.required' => 'Email không được để trống',
+                'email.email' => 'Email không đúng định dạng',
+                'email.min' => 'Email phải phải có ít nhất 8 ký tự',
+            ]);
+            // Validate dữ liệu
+            $validate = $request->validate();
+
+            if (!$validate) {
+                // Thông báo lỗi
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi xảy ra trong quá trình Gửi yêu cầu đặt lại mật khẩu'
+                ]);
+                return redirect('/auth/forget-password');
+            }
+
+            // xử lý gửi email token reset password
+            $user = $this->userModel->getUser('email', '=', $dataFields['email']);
+            if (!$user) {
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Không tìm thấy thông tin tài khoản!'
+                ]);
+                return redirect('/auth/forget-password');
+            }
+
+            // kiểm tra user đã kích hoạt chưa
+            if ($user['status'] != 1) {
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'User chưa kích hoạt! Bạn cần kích hoạt tài khoản trước khi đặt lại mật khẩu.'
+                ]);
+                return redirect('/auth/forget-password');
+            }
+
+            // kiểm tra user đã gửi token và token chưa hết hạn
+            if ($user['reset_token'] != '' && $user['reset_token_expired'] > time()) {
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Bạn đã gửi yêu cầu đặt lại mật khẩu, vui lòng kiểm tra email hoặc thử lại sau 5 phút!'
+                ]);
+                return redirect('/auth/forget-password');
+            }
+
+            // tạo token đặt lại mật khẩu
+            $resetToken = md5(uniqid());
+            // tạo link đặt lại mật khẩu
+            $linkReset = _WEB_ROOT . '/auth/reset-password/?token=' . $resetToken;
+
+            $userData = [
+                'reset_token' => $resetToken,
+                'reset_token_expired' => time() + 5*60,
+                'update_at' => date('Y-m-d H:i:s'),
+            ];
+            
+            // cập nhật reset_token
+            $this->userModel->updateUser($user['id'], $userData);
+
+            // gửi mail token reset password
+            $userName = $user['name'];
+            $subject = "User mangagement - Yêu cầu đặt lại mật khẩu tài khoản $userName";
+            $message = "<p>Quý khách đã yêu cầu đặt lại mật khẩu tài khoản <b>$userName</b> tại website <a href='" . _WEB_ROOT . "'>" . _WEB_ROOT . "</a></p>";
+            $message .= "<p>Để tiến hành đặt lại mật khẩu, quý khách vui lòng ấn vào <a href='$linkReset'>đây</a>.</p>";
+            $message .= "<p>Vui lòng bỏ qua nếu quý khách không phải là chủ của tài khoản này!</p>";
+            $mail = Mail::send($user['email'], $subject, $message);
+            // chuyển hướng đến trang forget-password
+            if (!$mail) {
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'error',
+                    'icon' => 'error',
+                    'message' => 'Có lỗi khi gửi email yêu cầu đặt lại mật khẩu! Quý khách vui lòng thử lại sau.',
+                ]);
+            } else {
+                Session::flash('alertModal', $modal_detail = [
+                    'action' => 'Quên mật khẩu',
+                    'status' => 'success',
+                    'icon' => 'success',
+                    'message' => 'Gửi lại yêu cầu cấp lại mật khẩu thành công! Bạn cần truy cập email và nhấn vào link để thực hiện đặt lại mật khẩu.',
+                ]);
+                return redirect('/auth/login');
+            }
+        }
+        return redirect('/auth/forget-password');                  
+    }
+
+    public function resetPassword() {
+        // hiển thị form đặt lại mật khẩu
+        $request = new Request();
+        $resetToken = $request->getFieldGet('token', 'string', '');
+        $this->data['params']['page_title'] = 'Đặt lại mật khẩu';
+        $this->data['content'] = 'login/reset-password';
+        $this->data['page_title'] = 'Đặt lại mật khẩu';
+        $this->data['params']['resetToken'] = $resetToken;
+
+        if (Session::data('alertModal')) {
+            $this->data['alertModal'] = Session::flash('alertModal');
+        }
+        if (Session::data('resetPassword')) {
+            $this->data['params']['resetPassword'] = Session::flash('resetPassword');
+        }
+        
+        // Render ra view
+        $this->render('layouts/auth', $this->data);  
+        
+    }
+
+    public function submitResetPassword() {
+        // xử lý đặt lại mật khẩu
+        $request = new Request();
+        $dataFields = $request->getFields();
+
+        if (!$request->isPost()) {
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đặt lại mật khẩu',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Invalid request method!'
+            ]);
+            return redirect('/auth/reset-password?token=' . ($dataFields['token'] ?? ''));
+        }
+
+        // Validate dữ liệu
+        $request->rules([
+            'password' => ['required', 'min:8'],
+            'confirm_password' => ['required', 'min:8', 'match:password'],
+            
+        ]);
+        $request->message([
+            'password.required' => 'Mật khẩu không được để trống',
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự',
+            'confirm_password.required' => 'Mật khẩu xác nhận không được để trống',
+            'confirm_password.min' => 'Mật khẩu xác nhận phải phải có ít nhất 8 ký tự',
+            'confirm_password.match' => 'Mật khẩu xác nhận không trùng khớp',
+        ]);
+        // Validate dữ liệu
+        $validate = $request->validate();
+
+        if (!$validate) {
+            // Thông báo lỗi
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đặt lại mật khẩu',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Có lỗi xảy ra trong quá trình đặt lại mật khẩu'
+            ]);
+            return redirect('/auth/reset-password?token=' . ($dataFields['token'] ?? ''));
+        }
+
+        // kiểm tra token
+        if (empty($dataFields['token'])) {
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đặt lại mật khẩu',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Token không hợp lệ!'
+            ]);
+            return redirect('/auth/reset-password?token=' . ($dataFields['token'] ?? ''));
+        }
+
+        $user = $this->userModel->getUser('reset_token', '=', $dataFields['token']);
+        if (!$user) {
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đặt lại mật khẩu',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Token không hợp lệ!'
+            ]);
+            return redirect('/auth/reset-password?token=' . ($dataFields['token'] ?? ''));
+        }
+
+        // kiểm tra token hết hạn
+        if ($user['reset_token_expired'] < time()) {
+            Session::flash('alertModal', $modal_detail = [
+                'action' => 'Đặt lại mật khẩu',
+                'status' => 'error',
+                'icon' => 'error',
+                'message' => 'Token đã hết hạn, vui lòng gửi lại yêu cầu đặt lại mật khẩu!'
+            ]);
+            return redirect('/auth/forget-password');
+        }
+
+        // cập nhật mật khẩu mới
+        $newPassword = Hash::make($dataFields['password']);
+        $this->userModel->updateUser($user['id'], [
+            'password' => $newPassword,
+            'reset_token' => '',
+            'reset_token_expired' => 0,
+            'update_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // redirect sang trang login
+        Session::flash('alertModal', $modal_detail = [
+            'action' => 'Đặt lại mật khẩu',
+            'status' => 'success',
+            'icon' => 'success',
+            'message' => 'Đặt lại mật khẩu thành công!'
+        ]);
+        return redirect('/auth/reset-password?token=' . ($dataFields['token'] ?? ''));
+    }
 }
