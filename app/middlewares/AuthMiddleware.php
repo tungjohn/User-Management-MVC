@@ -22,7 +22,42 @@ class AuthMiddleware extends Middlewares {
             'auth/submit-reset-password',
         ];
         
-        // check xem user đã đăng nhập chưa
+        // duy trì đăng nhập bằng cookie
+        // check xem có cookie đăng nhập không
+        if (Cookie::data('remember_token')) {
+            $remember_token = Cookie::data('remember_token');
+            $userModel = Load::model('UserModel');
+            $userInfo = $userModel->getUser('remember_token', '=', md5($remember_token));
+            if ($userInfo) {
+                if ($userInfo['remember_token_expired'] > time()) {
+                    if ($userInfo['status'] == 1) {
+                        // Lưu thông tin người dùng vào session
+                        if (empty(Session::data('userLogin'))) {
+                            $userLogin = [
+                                'id' => $userInfo['id'],
+                            ];
+                            Session::data('userLogin', $userLogin);
+                        }
+
+                        // lưu session id khi user đăng nhập
+                        if (empty($userInfo['session_id']) || $userInfo['session_id'] != Session::id()) {
+                            $userModel->updateUser($userLogin['id'], [
+                                'session_id' => Session::id(),
+                                'update_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                } else {
+                    // xóa cookie hết hạn
+                    $userModel->updateUser($userInfo['id'], [
+                        'remember_token' => '',
+                        'remember_token_expired	' => '0',
+                        'update_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+        }
+
         if (Session::data('userLogin')) {
             // đưa userInfo vào view để hiển thị
             $userLoginId = Session::data('userLogin')['id'];
@@ -32,11 +67,11 @@ class AuthMiddleware extends Middlewares {
                 // share thông tin user qua các view
                 View::share(['userInfo' => $userInfo]);
 
-                // Nếu đã đăng nhập, không cần redirect
                 if (in_array($path, $excludedPaths)) {
                     // Nếu đang ở trang đăng nhập hoặc đăng ký, redirect về trang chủ
                     redirect('/');
                 }
+                // Nếu đã đăng nhập, không cần redirect
                 return;
             }
             // nếu không tìm thấy thông tin hoặc user chưa kích hoạt -> redirect trang đăng nhập

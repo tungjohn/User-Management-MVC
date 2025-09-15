@@ -93,8 +93,36 @@ class AuthController extends Controller {
                 'update_at' => date('Y-m-d H:i:s')
             ]);
 
-            // Hiển thị thông báo thành công
-            // $this->flashMessage('Đăng nhập', 'success', 'success', 'Đăng nhập thành công!');
+            // nếu chọn remember me thì lưu cookie
+            if ($request->getFieldPost('remember_me', 'bool', false)) {
+                $remember_token = bin2hex(random_bytes(32)); // tạo token ngẫu nhiên
+                $remember_token_expired = time() + 60*60; // 1 giờ
+
+                // lưu token vào db
+                $update_remember_token = $this->userModel->updateUser($user['id'], [
+                    'remember_token' => md5($remember_token),
+                    'remember_token_expired' => $remember_token_expired,
+                    'update_at' => date('Y-m-d H:i:s')
+                ]);
+                // lưu cookie
+                if ($update_remember_token) {
+                    Cookie::data('remember_token', $remember_token, $remember_token_expired);
+                }
+            } else {
+                // nếu không chọn nhớ đăng nhập thì xóa token và cookie nếu có
+                if (Cookie::data('remember_token')) {
+                    Cookie::delete('remember_token', '0');
+                }
+                if ($user['remember_token']) {
+                    // xóa cookie
+                    $this->userModel->updateUser($user['id'], [
+                        'remember_token' => '',
+                        'remember_token_expired	' => '0',
+                        'update_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+
             return redirect('/');
         } else {
             // Hiển thị thông báo lỗi
@@ -113,11 +141,26 @@ class AuthController extends Controller {
             $user = $this->userModel->getUserById(Session::data('userLogin')['id']);
 
             if (!empty($user)) {
+                // kiểm tra có cookie không, nếu có thì xóa token
+                if (Cookie::data('remember_token')) {
+                    Cookie::delete('remember_token', '0');
+                }
+
+                if ($user['remember_token']) {
+                    // xóa cookie hết hạn
+                    $this->userModel->updateUser($user['id'], [
+                        'remember_token' => '',
+                        'remember_token_expired' => '0',
+                        'update_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
+
                 // xóa session id khi user đăng xuất
                 $this->userModel->updateUser($user['id'], [
                     'session_id' => '',
                     'update_at' => date('Y-m-d H:i:s')
                 ]);
+
                 Session::destroy('userLogin');
                 
                 return redirect('auth/login');

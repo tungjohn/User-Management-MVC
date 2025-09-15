@@ -8,6 +8,9 @@ $config['database'] = [
 
 $config['session'] = [
     'session_key' => 'unicode_session',
-    
+];
+
+$config['cookie'] = [
+    'cookie_key' => 'unicode_cookie',
 ];
 ?>

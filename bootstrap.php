@@ -67,6 +67,7 @@ require_once 'core/Load.php'; // Load Load
 require_once 'core/Middlewares.php'; // Load Middlewares
 
 require_once 'core/Session.php'; // Load Session
+require_once 'core/Cookie.php'; // Load Cookie
 
 // kiểm tra config và load Database
 if (!empty($config['database'])) {

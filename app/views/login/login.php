@@ -17,7 +17,7 @@
             <div class="row mb-3">
                 <div class="col-sm-12">
                     <div class="form-floating position-relative">
-                        <input type="password" class="form-control password-input" id="password" placeholder="" name="password" value="{{ old('password') }}" required>
+                        <input type="password" class="form-control password-input" id="password" placeholder="" name="password" required>
                         <label for="password">Mật khẩu</label>
                         <i class="fa fa-eye-slash toggle-password position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer;" aria-hidden="true"></i>
                     </div>
